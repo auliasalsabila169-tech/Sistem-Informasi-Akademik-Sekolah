@@ -1,0 +1,1000 @@
+ <!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistem Informasi Akademik (SIAKAD) - SMP Negeri 1 Trimurjo</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: #f1f5f9;
+      color: #1e293b;
+      margin: 0;
+      padding: 0;
+    }
+    .tab-btn.active {
+      background: #2563eb;
+      color: #ffffff;
+      box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.3);
+    }
+    .flow-card {
+      transition: all 0.2s ease;
+    }
+    .flow-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+    .actor-header {
+      border-radius: 12px 12px 0 0;
+    }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+    .live-pulse {
+      animation: pulse-dot 2s infinite ease-in-out;
+    }
+  </style>
+</head>
+<body class="p-4 md:p-8">
+
+  <!-- Header Banner -->
+  <div class="max-w-7xl mx-auto mb-8 bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 text-white rounded-2xl p-6 md:p-8 shadow-xl">
+    <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div>
+        <div class="flex items-center gap-2 mb-2">
+          <span class="inline-block px-3 py-1 bg-blue-500/30 text-blue-200 text-xs font-semibold rounded-full uppercase tracking-wider border border-blue-400/20">
+            Arsitektur Sistem Terintegrasi
+          </span>
+          <span id="sync-badge" class="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-500/20 text-emerald-300 text-xs font-semibold rounded-full border border-emerald-500/30">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 live-pulse"></span>
+            Auto-Sync Aktif
+          </span>
+        </div>
+        <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight">
+          SISTEM INFORMASI AKADEMIK (SIAKAD)
+        </h1>
+        <p class="text-blue-200 text-sm md:text-base mt-1">
+          SMP Negeri 1 Trimurjo • Arsitektur Framework Laravel & Database MySQL
+        </p>
+      </div>
+
+      <!-- Quick Control Bar -->
+      <div class="bg-white/10 backdrop-blur-md rounded-xl p-3 border border-white/10 text-xs flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+        <div>
+          <span class="text-slate-300 block text-[11px]">Terakhir Diperbarui:</span>
+          <span id="last-updated" class="font-mono text-emerald-300 font-bold">-</span>
+        </div>
+        <div class="h-6 w-px bg-white/20 hidden sm:block"></div>
+        <div class="flex items-center gap-2">
+          <button onclick="manualRefresh()" title="Perbarui Data Sekarang" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 rounded-lg text-white font-medium flex items-center gap-1.5 transition">
+            🔄 Refresh
+          </button>
+          <label class="flex items-center gap-1.5 text-[11px] text-slate-200 cursor-pointer select-none">
+            <input type="checkbox" id="auto-reload-toggle" checked onchange="toggleAutoReload(this.checked)" class="rounded text-blue-500">
+            Auto-Reload (5s)
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="flex flex-wrap gap-2 mt-6 pt-6 border-t border-white/10">
+      <button onclick="switchTab('flowchart')" id="btn-flowchart" class="tab-btn active px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 bg-white/10 hover:bg-white/20">
+        🔄 1. Flowchart Alur Kerja (4 Aktor)
+      </button>
+      <button onclick="switchTab('usecase')" id="btn-usecase" class="tab-btn px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 bg-white/10 hover:bg-white/20">
+        👥 2. Use Case Diagram
+      </button>
+      <button onclick="switchTab('activity')" id="btn-activity" class="tab-btn px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 bg-white/10 hover:bg-white/20">
+        ⚡ 3. Activity Diagram (14 Alur Fungsional)
+      </button>
+      <button onclick="switchTab('database')" id="btn-database" class="tab-btn px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 bg-white/10 hover:bg-white/20">
+        🏛️ 4. Class Diagram & Skema Tabel
+      </button>
+      <button onclick="switchTab('showcase')" id="btn-showcase" class="tab-btn px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 bg-white/10 hover:bg-white/20">
+        💻 5. Showcase Antarmuka (UI Login)
+      </button>
+    </div>
+  </div>
+
+  <main class="max-w-7xl mx-auto">
+
+    <!-- ============================================================== -->
+    <!-- TAB 1: FLOWCHART SWIMLANE -->
+    <!-- ============================================================== -->
+    <section id="tab-flowchart" class="tab-content block">
+      <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 mb-6">
+        <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-6">
+          <div>
+            <h2 class="text-xl font-bold text-slate-900">Flowchart Alur Kerja Sistem Informasi Akademik</h2>
+            <p class="text-slate-500 text-sm">Alur koordinasi operasional 4 pengguna (Tata Usaha, Wali Kelas, Guru, Siswa) terintegrasi ke Database SIAKAD</p>
+          </div>
+          <span class="px-3 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full text-xs font-semibold">
+            Status: Terverifikasi
+          </span>
+        </div>
+
+        <!-- Swimlane Container -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+
+          <!-- Lane 1: Staff TU / Admin -->
+          <div class="bg-slate-50 border-2 border-blue-200 rounded-2xl flex flex-col">
+            <div class="actor-header bg-blue-600 text-white p-3 text-center font-bold text-sm uppercase tracking-wider flex items-center justify-center gap-2">
+              <span>🏛️</span> STAFF TU / ADMIN
+            </div>
+            <div class="p-4 flex-1 flex flex-col items-center gap-3">
+              <div class="px-6 py-2 bg-emerald-600 text-white font-bold rounded-full text-xs shadow-sm">
+                MULAI
+              </div>
+              <div class="text-slate-400">↓</div>
+              <div class="w-full bg-white border border-slate-300 rounded-xl p-3 text-center text-xs font-semibold shadow-sm flow-card">
+                🔑 Form Login
+              </div>
+              <div class="text-slate-400">↓</div>
+              <div class="w-24 h-12 bg-amber-100 border border-amber-300 rounded-lg flex items-center justify-center text-[11px] font-bold text-amber-900 transform rotate-45 my-2">
+                <span class="-rotate-45">Berhasil?</span>
+              </div>
+              <div class="text-slate-400">↓ <span class="text-[10px] text-emerald-600 font-bold">Ya</span></div>
+              <div class="w-full bg-white border border-slate-300 rounded-xl p-3 text-center text-xs font-semibold shadow-sm flow-card">
+                📊 Dashboard TU
+              </div>
+              <div class="text-slate-400">↓</div>
+              <div class="w-full bg-blue-50 border-2 border-blue-300 rounded-xl p-3 text-center text-xs font-semibold text-blue-900 shadow-sm flow-card">
+                📝 <strong>Input Data Master & Rombel:</strong><br>
+                Siswa (Buku Induk), Guru, Kelas, Mapel
+              </div>
+              <div class="text-slate-400">↓</div>
+              <div class="w-full bg-indigo-50 border-2 border-indigo-300 rounded-xl p-3 text-center text-xs font-semibold text-indigo-900 shadow-sm flow-card">
+                📅 <strong>Membuat Jadwal Pelajaran (Hanya TU):</strong><br>
+                Penyusunan jadwal KBM resmi seluruh kelas
+              </div>
+              <div class="text-slate-400">↓</div>
+              <div class="w-full bg-emerald-50 border-2 border-emerald-300 rounded-xl p-3 text-center text-xs font-semibold text-emerald-900 shadow-sm flow-card">
+                📑 <strong>Akses Semua Nilai Setiap Kelas:</strong><br>
+                Memantau seluruh rekap nilai dari setiap rombel & guru
+              </div>
+              <div class="text-slate-400">↓</div>
+              <div class="px-6 py-2 bg-rose-600 text-white font-bold rounded-full text-xs shadow-sm">
+                SELESAI
+              </div>
+            </div>
+          </div>
+
+          <!-- Lane 2: Wali Kelas -->
+          <div class="bg-slate-50 border-2 border-amber-200 rounded-2xl flex flex-col">
+            <div class="actor-header bg-amber-600 text-white p-3 text-center font-bold text-sm uppercase tracking-wider flex items-center justify-center gap-2">
+              <span>👨‍🏫</span> WALI KELAS (Contoh: Pak Arya - VII B)
+            </div>
+            <div class="p-4 flex-1 flex flex-col items-center gap-3">
+              <div class="px-5 py-1.5 bg-slate-300 text-slate-700 font-bold rounded-full text-xs">
+                Akses
+              </div>
+              <div class="text-slate-400">↓</div>
+              <div class="w-full bg-white border border-slate-300 rounded-xl p-3 text-center text-xs font-semibold shadow-sm flow-card">
+                🔑 Form Login (aryapratama19@gmail.com)
+              </div>
+              <div class="text-slate-400">↓</div>
+              <div class="w-24 h-12 bg-amber-100 border border-amber-300 rounded-lg flex items-center justify-center text-[11px] font-bold text-amber-900 transform rotate-45 my-2">
+                <span class="-rotate-45">Berhasil?</span>
+              </div>
+              <div class="text-slate-400">↓ <span class="text-[10px] text-emerald-600 font-bold">Ya</span></div>
+              <div class="w-full bg-white border border-slate-300 rounded-xl p-3 text-center text-xs font-semibold shadow-sm flow-card">
+                📊 Dashboard Wali Kelas (Tema Emas & Indigo)
+              </div>
+              <div class="text-slate-400">↓</div>
+              <div class="w-full bg-amber-50 border-2 border-amber-300 rounded-xl p-3 text-center text-xs font-semibold text-amber-900 shadow-sm flow-card">
+                👥 <strong>Buku Induk Siswa Binaan:</strong><br>
+                Memantau biodata & profil siswa kelas binaan
+              </div>
+              <div class="text-slate-400">↓</div>
+              <div class="w-full bg-blue-50 border-2 border-blue-300 rounded-xl p-3 text-center text-xs font-semibold text-blue-900 shadow-sm flow-card">
+                👀 <strong>Mengecek Jadwal KBM Kelas Binaan:</strong><br>
+                Memantau jadwal KBM kelasnya (read-only, dibuat TU)
+              </div>
+              <div class="text-slate-400">↓</div>
+              <div class="w-full bg-indigo-50 border-2 border-indigo-300 rounded-xl p-3 text-center text-xs font-semibold text-indigo-900 shadow-sm flow-card">
+                📡 <strong>Radar Pemantauan Guru Mapel:</strong><br>
+                Memantau apakah seluruh guru mapel sudah menyetor nilai
+              </div>
+              <div class="text-slate-400">↓</div>
+              <div class="w-full bg-yellow-100 border-2 border-yellow-400 rounded-xl p-3 text-center text-xs font-bold text-yellow-950 shadow-md flow-card">
+                🖨️ <strong>Mencetak Buku Leger Rapor Resmi:</strong><br>
+                Leger Nilai resmi sekolah siap cetak & ditandatangani
+              </div>
+            </div>
+          </div>
+
+          <!-- Lane 3: Guru Mapel -->
+          <div class="bg-slate-50 border-2 border-teal-200 rounded-2xl flex flex-col">
+            <div class="actor-header bg-teal-600 text-white p-3 text-center font-bold text-sm uppercase tracking-wider flex items-center justify-center gap-2">
+              <span>📚</span> GURU MAPEL (Contoh: Pak Budi)
+            </div>
+            <div class="p-4 flex-1 flex flex-col items-center gap-3">
+              <div class="px-5 py-1.5 bg-slate-300 text-slate-700 font-bold rounded-full text-xs">
+                Akses
+              </div>
+              <div class="text-slate-400">↓</div>
+              <div class="w-full bg-white border border-slate-300 rounded-xl p-3 text-center text-xs font-semibold shadow-sm flow-card">
+                🔑 Form Login (budi@smpn1trimurjo.sch.id)
+              </div>
+              <div class="text-slate-400">↓</div>
+              <div class="w-24 h-12 bg-amber-100 border border-amber-300 rounded-lg flex items-center justify-center text-[11px] font-bold text-amber-900 transform rotate-45 my-2">
+                <span class="-rotate-45">Berhasil?</span>
+              </div>
+              <div class="text-slate-400">↓ <span class="text-[10px] text-emerald-600 font-bold">Ya</span></div>
+              <div class="w-full bg-white border border-slate-300 rounded-xl p-3 text-center text-xs font-semibold shadow-sm flow-card">
+                📊 Dashboard Guru (Tema Hijau Zamrud)
+              </div>
+              <div class="text-slate-400">↓</div>
+              <div class="w-full bg-teal-50 border-2 border-teal-300 rounded-xl p-3 text-center text-xs font-semibold text-teal-900 shadow-sm flow-card">
+                👀 <strong>Jadwal Mengajar Pribadi:</strong><br>
+                Melihat sesi & rombel tempat guru mengajar
+              </div>
+              <div class="text-slate-400">↓</div>
+              <div class="w-full bg-emerald-50 border-2 border-emerald-300 rounded-xl p-3 text-center text-xs font-semibold text-emerald-900 shadow-sm flow-card">
+                ✍️ <strong>Memberikan / Input Nilai Siswa:</strong><br>
+                Pengetahuan, Keterampilan, Sikap (A/B/C/D), & Deskripsi
+              </div>
+              <div class="text-slate-400">↓</div>
+              <div class="w-full bg-cyan-50 border-2 border-cyan-300 rounded-xl p-3 text-center text-xs font-semibold text-cyan-900 shadow-sm flow-card">
+                📊 <strong>Monitoring Progres Penilaian:</strong><br>
+                Indikator persentase ketuntasan input nilai per rombel
+              </div>
+              <div class="text-slate-400">↓</div>
+              <div class="w-full bg-purple-50 border border-purple-200 rounded-xl p-2.5 text-center text-[11px] text-purple-900 font-medium">
+                💾 Tersimpan & Sinkron ke <strong>Database SIAKAD</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- Lane 4: Siswa -->
+          <div class="bg-slate-50 border-2 border-violet-200 rounded-2xl flex flex-col">
+            <div class="actor-header bg-violet-600 text-white p-3 text-center font-bold text-sm uppercase tracking-wider flex items-center justify-center gap-2">
+              <span>🎓</span> SISWA
+            </div>
+            <div class="p-4 flex-1 flex flex-col items-center gap-3">
+              <div class="px-5 py-1.5 bg-slate-300 text-slate-700 font-bold rounded-full text-xs">
+                Akses
+              </div>
+              <div class="text-slate-400">↓</div>
+              <div class="w-full bg-white border border-slate-300 rounded-xl p-3 text-center text-xs font-semibold shadow-sm flow-card">
+                🔑 Form Login (NISN / Email)
+              </div>
+              <div class="text-slate-400">↓</div>
+              <div class="w-24 h-12 bg-amber-100 border border-amber-300 rounded-lg flex items-center justify-center text-[11px] font-bold text-amber-900 transform rotate-45 my-2">
+                <span class="-rotate-45">Berhasil?</span>
+              </div>
+              <div class="text-slate-400">↓ <span class="text-[10px] text-emerald-600 font-bold">Ya</span></div>
+              <div class="w-full bg-white border border-slate-300 rounded-xl p-3 text-center text-xs font-semibold shadow-sm flow-card">
+                📊 Dashboard Siswa
+              </div>
+              <div class="text-slate-400">↓</div>
+              <div class="w-full bg-violet-50 border-2 border-violet-300 rounded-xl p-4 text-center text-xs font-semibold text-violet-900 shadow-sm flow-card space-y-2">
+                <div class="text-left font-bold text-violet-950 border-b border-violet-200 pb-1">
+                  🔍 Akses Informasi Real-time:
+                </div>
+                <div class="bg-white p-2 rounded-lg border border-violet-200 text-left">
+                  📅 <strong>Jadwal Pelajaran</strong>
+                </div>
+                <div class="bg-white p-2 rounded-lg border border-violet-200 text-left">
+                  📈 <strong>Nilai & Rapor Hasil Belajar</strong>
+                </div>
+                <div class="bg-white p-2 rounded-lg border border-violet-200 text-left">
+                  👤 <strong>Biodata Buku Induk Siswa</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- TAB 2: USE CASE DIAGRAM -->
+    <!-- ============================================================== -->
+    <section id="tab-usecase" class="tab-content hidden">
+      <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 mb-6">
+        <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-6">
+          <div>
+            <h2 class="text-xl font-bold text-slate-900">Use Case Diagram Sistem Informasi Akademik</h2>
+            <p class="text-slate-500 text-sm">4 Aktor pengguna dengan relasi otentikasi sentral ke use case LOGIN</p>
+          </div>
+          <span class="px-3 py-1 bg-blue-50 text-blue-700 border border-blue-200 rounded-full text-xs font-semibold">
+            Standar UML
+          </span>
+        </div>
+
+        <!-- Central Login Box & 4 Actor Cards -->
+        <div class="flex flex-col items-center gap-8 mb-8">
+          
+          <!-- Central Auth -->
+          <div class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-4 rounded-full shadow-lg border-4 border-blue-200 text-center">
+            <span class="text-xs uppercase tracking-widest text-blue-200 font-bold block">Central Authentication</span>
+            <span class="text-xl font-black">🔐 ( LOGIN SISTEM )</span>
+          </div>
+
+          <!-- Actors Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+
+            <!-- Actor: Staff TU -->
+            <div class="border-2 border-blue-200 rounded-2xl p-5 bg-blue-50/40">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="w-12 h-12 bg-blue-600 text-white rounded-xl flex items-center justify-center font-bold text-xl shadow-md">
+                  TU
+                </div>
+                <div>
+                  <h3 class="font-bold text-slate-900">Staff TU / Administrator</h3>
+                  <span class="text-xs text-blue-600 font-semibold">11 Fitur Master & Akademik</span>
+                </div>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                <div class="bg-white p-2.5 rounded-lg border border-blue-100 shadow-2xs font-medium">📌 Menu Dashboard</div>
+                <div class="bg-white p-2.5 rounded-lg border border-blue-100 shadow-2xs font-medium">👥 Menu Users (Kelola Akun)</div>
+                <div class="bg-white p-2.5 rounded-lg border border-blue-100 shadow-2xs font-medium">👨‍🏫 Menginput Data Guru</div>
+                <div class="bg-white p-2.5 rounded-lg border border-blue-100 shadow-2xs font-medium">🏫 Menginput Data Kelas</div>
+                <div class="bg-white p-2.5 rounded-lg border border-blue-100 shadow-2xs font-medium">🎓 Menginput Data Siswa (94 Field)</div>
+                <div class="bg-white p-2.5 rounded-lg border border-blue-100 shadow-2xs font-medium">📅 Menginput Tahun Ajaran</div>
+                <div class="bg-white p-2.5 rounded-lg border border-blue-100 shadow-2xs font-medium">🗓️ Menginput Data Hari</div>
+                <div class="bg-white p-2.5 rounded-lg border border-blue-100 shadow-2xs font-medium">⏰ Menginput Jam Pelajaran</div>
+                <div class="bg-white p-2.5 rounded-lg border border-blue-100 shadow-2xs font-medium">📖 Menginput Mata Pelajaran</div>
+                <div class="bg-white p-2.5 rounded-lg border border-blue-100 shadow-2xs font-medium">📑 Menu Jadwal Pelajaran</div>
+                <div class="bg-white p-2.5 rounded-lg border border-blue-100 shadow-2xs font-medium col-span-2">📊 Menu Nilai Siswa</div>
+              </div>
+            </div>
+
+            <!-- Actor: Wali Kelas -->
+            <div class="border-2 border-amber-200 rounded-2xl p-5 bg-amber-50/40">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="w-12 h-12 bg-amber-600 text-white rounded-xl flex items-center justify-center font-bold text-xl shadow-md">
+                  WK
+                </div>
+                <div>
+                  <h3 class="font-bold text-slate-900">Wali Kelas (Contoh: Pak Arya - VII B)</h3>
+                  <span class="text-xs text-amber-600 font-semibold">5 Fitur Manajemen Kelas Binaan & Leger</span>
+                </div>
+              </div>
+              <div class="space-y-2 text-xs">
+                <div class="bg-white p-2.5 rounded-lg border border-amber-100 shadow-2xs font-medium">📌 Menu Dashboard Walas (Tema Emas & Indigo)</div>
+                <div class="bg-white p-2.5 rounded-lg border border-amber-100 shadow-2xs font-medium">👥 Buku Induk & Direktori Siswa Kelas Binaan</div>
+                <div class="bg-white p-2.5 rounded-lg border border-amber-100 shadow-2xs font-medium">📡 Radar Monitoring Kepatuhan Nilai Guru Mapel</div>
+                <div class="bg-white p-2.5 rounded-lg border border-amber-100 shadow-2xs font-medium">👀 Pengecekan Jadwal KBM Kelas Binaan (Read-Only)</div>
+                <div class="bg-amber-100/70 text-amber-900 p-3 rounded-lg border border-amber-300 font-bold flex items-center justify-between">
+                  <span>🖨️ Mencetak Buku Leger Nilai Rapor</span>
+                  <span class="text-[10px] bg-amber-600 text-white px-2 py-0.5 rounded-full">Output Utama</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Actor: Guru -->
+            <div class="border-2 border-teal-200 rounded-2xl p-5 bg-teal-50/40">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="w-12 h-12 bg-teal-600 text-white rounded-xl flex items-center justify-center font-bold text-xl shadow-md">
+                  GR
+                </div>
+                <div>
+                  <h3 class="font-bold text-slate-900">Guru Mata Pelajaran (Contoh: Pak Budi)</h3>
+                  <span class="text-xs text-teal-600 font-semibold">5 Fitur Pengajaran & Penilaian Mapel</span>
+                </div>
+              </div>
+              <div class="space-y-2 text-xs">
+                <div class="bg-white p-2.5 rounded-lg border border-teal-100 shadow-2xs font-medium">📌 Menu Dashboard Guru (Tema Hijau Zamrud)</div>
+                <div class="bg-white p-2.5 rounded-lg border border-teal-100 shadow-2xs font-medium">📚 Melihat Jadwal Mengajar Pribadi</div>
+                <div class="bg-white p-2.5 rounded-lg border border-teal-100 shadow-2xs font-medium">👥 Melihat Daftar Siswa Rombel yang Diajar</div>
+                <div class="bg-teal-100/70 text-teal-900 p-2.5 rounded-lg border border-teal-300 font-bold">
+                  ✍️ Formulir Input Nilai Siswa (Pengetahuan, Keterampilan, Sikap A/B/C/D, Deskripsi)
+                </div>
+                <div class="bg-white p-2.5 rounded-lg border border-teal-100 shadow-2xs font-medium">📊 Monitoring Progres Penilaian Mapel Pribadi</div>
+              </div>
+            </div>
+
+            <!-- Actor: Siswa -->
+            <div class="border-2 border-violet-200 rounded-2xl p-5 bg-violet-50/40">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="w-12 h-12 bg-violet-600 text-white rounded-xl flex items-center justify-center font-bold text-xl shadow-md">
+                  SW
+                </div>
+                <div>
+                  <h3 class="font-bold text-slate-900">Siswa (Peserta Didik)</h3>
+                  <span class="text-xs text-violet-600 font-semibold">3 Fitur Akses Informasi</span>
+                </div>
+              </div>
+              <div class="space-y-2 text-xs">
+                <div class="bg-white p-2.5 rounded-lg border border-violet-100 shadow-2xs font-medium">📅 Melihat Jadwal Mata Pelajaran</div>
+                <div class="bg-white p-2.5 rounded-lg border border-violet-100 shadow-2xs font-medium">📈 Melihat Nilai Siswa (Hasil Rapor)</div>
+                <div class="bg-white p-2.5 rounded-lg border border-violet-100 shadow-2xs font-medium">👤 Melihat Profil Data Siswa Pribadi</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- TAB 3: ACTIVITY DIAGRAMS (14 ALUR) -->
+    <!-- ============================================================== -->
+    <section id="tab-activity" class="tab-content hidden">
+      <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 mb-6">
+        <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-6">
+          <div>
+            <h2 class="text-xl font-bold text-slate-900">Activity Diagram Alur Fungsional Sistem</h2>
+            <p class="text-slate-500 text-sm">Rincian langkah interaksi antara Pengguna dan Sistem pada SIAKAD SMPN 1 Trimurjo</p>
+          </div>
+          <span class="px-3 py-1 bg-purple-50 text-purple-700 border border-purple-200 rounded-full text-xs font-semibold">
+            14 Alur Fungsional
+          </span>
+        </div>
+
+        <!-- Filter Buttons -->
+        <div class="flex flex-wrap gap-2 mb-6">
+          <button onclick="filterActivity('all')" class="act-filter active px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-white">Semua (14)</button>
+          <button onclick="filterActivity('tu')" class="act-filter px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-100 text-blue-700 hover:bg-blue-200">Staff TU (5)</button>
+          <button onclick="filterActivity('walas')" class="act-filter px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-100 text-amber-700 hover:bg-amber-200">Wali Kelas (4)</button>
+          <button onclick="filterActivity('guru')" class="act-filter px-3 py-1.5 rounded-lg text-xs font-semibold bg-teal-100 text-teal-700 hover:bg-teal-200">Guru (4)</button>
+          <button onclick="filterActivity('siswa')" class="act-filter px-3 py-1.5 rounded-lg text-xs font-semibold bg-violet-100 text-violet-700 hover:bg-violet-200">Siswa (1)</button>
+        </div>
+
+        <!-- Activity Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="activity-container">
+
+          <!-- 1. Dashboard Admin -->
+          <div class="act-item tu border border-slate-200 rounded-xl p-4 bg-slate-50/50 hover:bg-white hover:shadow-md transition">
+            <div class="flex items-center justify-between text-xs font-bold text-blue-600 mb-2">
+              <span>Alur Sistem 01</span>
+              <span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded">TU / Admin</span>
+            </div>
+            <h4 class="font-bold text-slate-800 text-sm mb-2">Dashboard Administrator</h4>
+            <ol class="text-xs text-slate-600 space-y-1 list-decimal list-inside">
+              <li>User masukkan email & password</li>
+              <li>Sistem memvalidasi kredensial</li>
+              <li>Tampil menu Dashboard Admin</li>
+              <li>Menampilkan ringkasan info data akademik</li>
+            </ol>
+          </div>
+
+          <!-- 2. Input Data Siswa -->
+          <div class="act-item tu border border-slate-200 rounded-xl p-4 bg-slate-50/50 hover:bg-white hover:shadow-md transition">
+            <div class="flex items-center justify-between text-xs font-bold text-blue-600 mb-2">
+              <span>Alur Sistem 02</span>
+              <span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded">TU / Admin</span>
+            </div>
+            <h4 class="font-bold text-slate-800 text-sm mb-2">Pengelolaan & Input Data Siswa</h4>
+            <ol class="text-xs text-slate-600 space-y-1 list-decimal list-inside">
+              <li>Pilih menu <strong>Data Siswa</strong></li>
+              <li>Klik tombol <em>Siswa Baru</em></li>
+              <li>Isi formulir lengkap (94 field Buku Induk)</li>
+              <li>Klik <em>Buat / Simpan</em></li>
+              <li>Sistem menyimpan data & tampil ke daftar</li>
+            </ol>
+          </div>
+
+          <!-- 3. Input Data Guru -->
+          <div class="act-item tu border border-slate-200 rounded-xl p-4 bg-slate-50/50 hover:bg-white hover:shadow-md transition">
+            <div class="flex items-center justify-between text-xs font-bold text-blue-600 mb-2">
+              <span>Alur Sistem 03</span>
+              <span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded">TU / Admin</span>
+            </div>
+            <h4 class="font-bold text-slate-800 text-sm mb-2">Pengelolaan & Input Data Guru</h4>
+            <ol class="text-xs text-slate-600 space-y-1 list-decimal list-inside">
+              <li>Pilih menu <strong>Data Guru</strong></li>
+              <li>Klik <em>Guru Baru</em> & isi NIP, Nama, dll.</li>
+              <li>Klik tombol <em>Buat / Simpan</em></li>
+              <li>Sistem menyimpan ke basis data</li>
+            </ol>
+          </div>
+
+          <!-- 4. Input Data Kelas -->
+          <div class="act-item tu border border-slate-200 rounded-xl p-4 bg-slate-50/50 hover:bg-white hover:shadow-md transition">
+            <div class="flex items-center justify-between text-xs font-bold text-blue-600 mb-2">
+              <span>Alur Sistem 04</span>
+              <span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded">TU / Admin</span>
+            </div>
+            <h4 class="font-bold text-slate-800 text-sm mb-2">Pengelolaan Data Kelas & Wali Kelas</h4>
+            <ol class="text-xs text-slate-600 space-y-1 list-decimal list-inside">
+              <li>Pilih menu <strong>Data Kelas</strong></li>
+              <li>Klik <em>Kelas Baru</em> (VII A, tingkat, dll)</li>
+              <li>Pilih guru sebagai Wali Kelas</li>
+              <li>Klik <em>Buat</em> & simpan ke database</li>
+            </ol>
+          </div>
+
+          <!-- 5. Input Data Tahun Ajaran -->
+          <div class="act-item tu border border-slate-200 rounded-xl p-4 bg-slate-50/50 hover:bg-white hover:shadow-md transition">
+            <div class="flex items-center justify-between text-xs font-bold text-blue-600 mb-2">
+              <span>Alur Sistem 05</span>
+              <span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded">TU / Admin</span>
+            </div>
+            <h4 class="font-bold text-slate-800 text-sm mb-2">Pengelolaan Periode Tahun Ajaran</h4>
+            <ol class="text-xs text-slate-600 space-y-1 list-decimal list-inside">
+              <li>Pilih menu <strong>Data Tahun Ajaran</strong></li>
+              <li>Klik <em>Tahun Ajaran Baru</em></li>
+              <li>Input tahun (contoh: 2025/2026) & status</li>
+              <li>Klik <em>Buat</em> & sistem menyimpan data</li>
+            </ol>
+          </div>
+
+          <!-- 6. Dashboard Walas -->
+          <div class="act-item walas border border-slate-200 rounded-xl p-4 bg-slate-50/50 hover:bg-white hover:shadow-md transition">
+            <div class="flex items-center justify-between text-xs font-bold text-amber-600 mb-2">
+              <span>Alur Sistem 06</span>
+              <span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded">Wali Kelas</span>
+            </div>
+            <h4 class="font-bold text-slate-800 text-sm mb-2">Dashboard Wali Kelas</h4>
+            <ol class="text-xs text-slate-600 space-y-1 list-decimal list-inside">
+              <li>Walas login ke sistem</li>
+              <li>Sistem memvalidasi kredensial</li>
+              <li>Tampil dashboard ringkasan: jadwal, data siswa rombel, dan rekap nilai</li>
+            </ol>
+          </div>
+
+          <!-- 7. Input Jadwal Pelajaran -->
+          <div class="act-item walas border border-slate-200 rounded-xl p-4 bg-slate-50/50 hover:bg-white hover:shadow-md transition">
+            <div class="flex items-center justify-between text-xs font-bold text-amber-600 mb-2">
+              <span>Alur Sistem 07</span>
+              <span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded">Wali Kelas</span>
+            </div>
+            <h4 class="font-bold text-slate-800 text-sm mb-2">Penyusunan Jadwal Pelajaran Kelas</h4>
+            <ol class="text-xs text-slate-600 space-y-1 list-decimal list-inside">
+              <li>Pilih menu <strong>Jadwal Pelajaran</strong></li>
+              <li>Klik <em>Jadwal Baru</em></li>
+              <li>Pilih mapel, guru, hari, jam, kelas</li>
+              <li>Klik <em>Buat / Simpan</em></li>
+            </ol>
+          </div>
+
+          <!-- 8. Lihat Data Siswa (Walas) -->
+          <div class="act-item walas border border-slate-200 rounded-xl p-4 bg-slate-50/50 hover:bg-white hover:shadow-md transition">
+            <div class="flex items-center justify-between text-xs font-bold text-amber-600 mb-2">
+              <span>Alur Sistem 08</span>
+              <span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded">Wali Kelas</span>
+            </div>
+            <h4 class="font-bold text-slate-800 text-sm mb-2">Monitoring Data Siswa Binaan</h4>
+            <ol class="text-xs text-slate-600 space-y-1 list-decimal list-inside">
+              <li>Pilih menu <strong>Data Siswa</strong></li>
+              <li>Sistem menampilkan daftar siswa binaan</li>
+              <li>Melihat identitas & profil lengkap siswa</li>
+            </ol>
+          </div>
+
+          <!-- 9. Cetak Leger Nilai -->
+          <div class="act-item walas border-2 border-amber-300 rounded-xl p-4 bg-amber-50/60 hover:bg-white hover:shadow-md transition">
+            <div class="flex items-center justify-between text-xs font-bold text-amber-700 mb-2">
+              <span>Alur Sistem 09</span>
+              <span class="bg-amber-600 text-white px-2 py-0.5 rounded">OUTPUT UTAMA</span>
+            </div>
+            <h4 class="font-bold text-amber-950 text-sm mb-2">Rekapitulasi & Cetak Leger Nilai</h4>
+            <ol class="text-xs text-amber-900 space-y-1 list-decimal list-inside font-medium">
+              <li>Pilih menu <strong>Nilai Siswa</strong></li>
+              <li>Sistem merekap nilai seluruh mapel kelas</li>
+              <li>Klik tombol <strong>Cetak Leger</strong></li>
+              <li>Dokumen dicetak & diserahkan ke TU</li>
+            </ol>
+          </div>
+
+          <!-- 10. Dashboard Guru -->
+          <div class="act-item guru border border-slate-200 rounded-xl p-4 bg-slate-50/50 hover:bg-white hover:shadow-md transition">
+            <div class="flex items-center justify-between text-xs font-bold text-teal-600 mb-2">
+              <span>Alur Sistem 10</span>
+              <span class="bg-teal-100 text-teal-800 px-2 py-0.5 rounded">Guru Mapel</span>
+            </div>
+            <h4 class="font-bold text-slate-800 text-sm mb-2">Dashboard Guru Pengampu</h4>
+            <ol class="text-xs text-slate-600 space-y-1 list-decimal list-inside">
+              <li>Guru login ke sistem</li>
+              <li>Sistem menampilkan dashboard guru: jadwal mengajar, siswa, dan nilai</li>
+            </ol>
+          </div>
+
+          <!-- 11. Lihat Jadwal Guru -->
+          <div class="act-item guru border border-slate-200 rounded-xl p-4 bg-slate-50/50 hover:bg-white hover:shadow-md transition">
+            <div class="flex items-center justify-between text-xs font-bold text-teal-600 mb-2">
+              <span>Alur Sistem 11</span>
+              <span class="bg-teal-100 text-teal-800 px-2 py-0.5 rounded">Guru Mapel</span>
+            </div>
+            <h4 class="font-bold text-slate-800 text-sm mb-2">Pemeriksaan Jadwal Mengajar</h4>
+            <ol class="text-xs text-slate-600 space-y-1 list-decimal list-inside">
+              <li>Pilih menu <strong>Jadwal Pelajaran</strong></li>
+              <li>Sistem menampilkan daftar jadwal mengajar sesuai mapel & kelas</li>
+            </ol>
+          </div>
+
+          <!-- 12. Lihat Data Siswa Guru -->
+          <div class="act-item guru border border-slate-200 rounded-xl p-4 bg-slate-50/50 hover:bg-white hover:shadow-md transition">
+            <div class="flex items-center justify-between text-xs font-bold text-teal-600 mb-2">
+              <span>Alur Sistem 12</span>
+              <span class="bg-teal-100 text-teal-800 px-2 py-0.5 rounded">Guru Mapel</span>
+            </div>
+            <h4 class="font-bold text-slate-800 text-sm mb-2">Data Siswa Rombel yang Diajar</h4>
+            <ol class="text-xs text-slate-600 space-y-1 list-decimal list-inside">
+              <li>Pilih menu <strong>Data Siswa</strong></li>
+              <li>Melihat daftar siswa pada rombel yang diajar</li>
+            </ol>
+          </div>
+
+          <!-- 13. Input Nilai Siswa -->
+          <div class="act-item guru border border-slate-200 rounded-xl p-4 bg-slate-50/50 hover:bg-white hover:shadow-md transition">
+            <div class="flex items-center justify-between text-xs font-bold text-teal-600 mb-2">
+              <span>Alur Sistem 13</span>
+              <span class="bg-teal-100 text-teal-800 px-2 py-0.5 rounded">Guru Mapel</span>
+            </div>
+            <h4 class="font-bold text-slate-800 text-sm mb-2">Input Nilai & Capaian Belajar Siswa</h4>
+            <ol class="text-xs text-slate-600 space-y-1 list-decimal list-inside">
+              <li>Pilih menu <strong>Nilai Siswa</strong> ➡️ <em>Nilai Baru</em></li>
+              <li>Input nilai: Pengetahuan, Keterampilan, Sikap (`sb/b/c/k`), Deskripsi</li>
+              <li>Klik <em>Buat / Simpan</em></li>
+            </ol>
+          </div>
+
+          <!-- 14. Akses Siswa -->
+          <div class="act-item siswa border border-slate-200 rounded-xl p-4 bg-slate-50/50 hover:bg-white hover:shadow-md transition">
+            <div class="flex items-center justify-between text-xs font-bold text-violet-600 mb-2">
+              <span>Alur Sistem 14</span>
+              <span class="bg-violet-100 text-violet-800 px-2 py-0.5 rounded">Siswa</span>
+            </div>
+            <h4 class="font-bold text-slate-800 text-sm mb-2">Akses Mandiri Siswa</h4>
+            <ol class="text-xs text-slate-600 space-y-1 list-decimal list-inside">
+              <li>Siswa login menggunakan <strong>NISN / Email</strong></li>
+              <li>Sistem memvalidasi kredensial</li>
+              <li>Menampilkan: Nilai Hasil Belajar, Data Siswa, & Jadwal Pelajaran</li>
+            </ol>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- TAB 4: DATABASE & CLASS DIAGRAM -->
+    <!-- ============================================================== -->
+    <section id="tab-database" class="tab-content hidden">
+      <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 mb-6">
+        <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-6">
+          <div>
+            <h2 class="text-xl font-bold text-slate-900">Arsitektur Class Diagram & Struktur Relasi Basis Data</h2>
+            <p class="text-slate-500 text-sm">Relasi 13 tabel basis data MySQL yang telah disempurnakan dan terpasang di phpMyAdmin</p>
+          </div>
+          <span class="px-3 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full text-xs font-semibold">
+            Status: Database Aktif
+          </span>
+        </div>
+
+        <!-- Tables Showcase -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+
+          <!-- Card 1: users -->
+          <div class="border border-slate-200 rounded-xl overflow-hidden text-xs">
+            <div class="bg-slate-800 text-white font-bold p-2.5 flex justify-between">
+              <span>users</span>
+              <span class="text-slate-300 text-[10px]">Autentikasi</span>
+            </div>
+            <div class="p-3 bg-slate-50 space-y-1 font-mono">
+              <div class="text-amber-700 font-bold">🔑 id_user (PK, BIGINT)</div>
+              <div>name (VARCHAR 255)</div>
+              <div>email (VARCHAR 255, UNIQUE)</div>
+              <div>password (VARCHAR 255)</div>
+              <div class="text-slate-500">remember_token, timestamps</div>
+            </div>
+          </div>
+
+          <!-- Card 2: siswas -->
+          <div class="border-2 border-blue-300 rounded-xl overflow-hidden text-xs">
+            <div class="bg-blue-700 text-white font-bold p-2.5 flex justify-between">
+              <span>siswas (94 Field)</span>
+              <span class="text-blue-200 text-[10px]">Buku Induk</span>
+            </div>
+            <div class="p-3 bg-blue-50/40 space-y-1 font-mono">
+              <div class="text-amber-700 font-bold">🔑 id_siswa (PK, BIGINT)</div>
+              <div class="text-blue-700 font-semibold">🔗 user_id (FK ke users)</div>
+              <div class="text-blue-700 font-semibold">🔗 kelas_id (FK ke kelas)</div>
+              <div>nis (VARCHAR 50), nisn (VARCHAR 50)</div>
+              <div>nama, jk, ttl, agama, alamat</div>
+              <div>data_ayah, data_ibu, data_wali</div>
+              <div class="text-slate-500">presensi, ekstrakurikuler, foto...</div>
+            </div>
+          </div>
+
+          <!-- Card 3: nilais -->
+          <div class="border-2 border-emerald-300 rounded-xl overflow-hidden text-xs">
+            <div class="bg-emerald-700 text-white font-bold p-2.5 flex justify-between">
+              <span>nilais</span>
+              <span class="text-emerald-200 text-[10px]">Rapor & Leger</span>
+            </div>
+            <div class="p-3 bg-emerald-50/40 space-y-1 font-mono">
+              <div class="text-amber-700 font-bold">🔑 id_nilai (PK, BIGINT)</div>
+              <div class="text-blue-700 font-semibold">🔗 siswa_id (FK ke siswas)</div>
+              <div class="text-blue-700 font-semibold">🔗 jadwal_id (FK ke jadwal)</div>
+              <div class="text-blue-700 font-semibold">🔗 tahun_ajaran_id (FK)</div>
+              <div>semester (ENUM 'ganjil', 'genap')</div>
+              <div>nilai_pengetahuan, nilai_keterampilan</div>
+              <div class="text-emerald-800 font-bold">nilai_sikap ('sb','b','c','k')</div>
+              <div>nilai_akhir, deskripsi (TEXT)</div>
+            </div>
+          </div>
+
+          <!-- Card 4: jadwal -->
+          <div class="border border-slate-200 rounded-xl overflow-hidden text-xs">
+            <div class="bg-slate-800 text-white font-bold p-2.5 flex justify-between">
+              <span>jadwal</span>
+              <span class="text-slate-300 text-[10px]">Plotting KBM</span>
+            </div>
+            <div class="p-3 bg-slate-50 space-y-1 font-mono">
+              <div class="text-amber-700 font-bold">🔑 id_jadwal (PK, BIGINT)</div>
+              <div class="text-blue-700 font-semibold">🔗 guru_id (FK ke guru)</div>
+              <div class="text-blue-700 font-semibold">🔗 mapel_id (FK ke mapel)</div>
+              <div class="text-blue-700 font-semibold">🔗 kelas_id (FK ke kelas)</div>
+              <div class="text-blue-700 font-semibold">🔗 hari_id, jam_id, tahun_id</div>
+            </div>
+          </div>
+
+          <!-- Card 5: kelas -->
+          <div class="border border-slate-200 rounded-xl overflow-hidden text-xs">
+            <div class="bg-slate-800 text-white font-bold p-2.5 flex justify-between">
+              <span>kelas</span>
+              <span class="text-slate-300 text-[10px]">Rombel</span>
+            </div>
+            <div class="p-3 bg-slate-50 space-y-1 font-mono">
+              <div class="text-amber-700 font-bold">🔑 id_kelas (PK, BIGINT)</div>
+              <div>nama_kelas (VII A, dll)</div>
+              <div>tingkat (7, 8, 9)</div>
+              <div class="text-blue-700 font-semibold">🔗 guru_id (FK - Wali Kelas)</div>
+            </div>
+          </div>
+
+          <!-- Card 6: guru -->
+          <div class="border border-slate-200 rounded-xl overflow-hidden text-xs">
+            <div class="bg-slate-800 text-white font-bold p-2.5 flex justify-between">
+              <span>guru</span>
+              <span class="text-slate-300 text-[10px]">Pendidik</span>
+            </div>
+            <div class="p-3 bg-slate-50 space-y-1 font-mono">
+              <div class="text-amber-700 font-bold">🔑 id_guru (PK, BIGINT)</div>
+              <div>nip, nama_guru, no_hp, alamat</div>
+              <div class="text-blue-700 font-semibold">🔗 user_id (FK ke users)</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- TAB 5: UI LOGIN SHOWCASE -->
+    <!-- ============================================================== -->
+    <section id="tab-showcase" class="tab-content hidden">
+      <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 mb-6">
+        <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-6">
+          <div>
+            <h2 class="text-xl font-bold text-slate-900">Rancangan Antarmuka Login SIAKAD</h2>
+            <p class="text-slate-500 text-sm">Mendukung otentikasi login fleksibel menggunakan <strong>Email</strong> (Staf/Guru) atau <strong>NISN</strong> (Siswa)</p>
+          </div>
+          <span class="px-3 py-1 bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-full text-xs font-semibold">
+            Visual Mockup
+          </span>
+        </div>
+
+        <!-- Login Container Mockup -->
+        <div class="max-w-4xl mx-auto bg-slate-100 p-6 md:p-10 rounded-3xl border border-slate-300 shadow-inner">
+          <div class="bg-white rounded-2xl shadow-xl overflow-hidden grid grid-cols-1 md:grid-cols-2 border border-slate-200">
+            
+            <!-- Left: Ilustrasi Login -->
+            <div class="bg-gradient-to-br from-blue-700 via-indigo-700 to-slate-900 p-8 flex flex-col justify-between text-white">
+              <div>
+                <div class="flex items-center gap-3 mb-4">
+                  <div class="w-10 h-10 p-1 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center border border-white/20">
+                    <img src="logo-sekolah.png" alt="Logo SMPN 1 Trimurjo" class="w-full h-full object-contain">
+                  </div>
+                  <div>
+                    <h3 class="font-bold text-base leading-tight">SMPN 1 TRIMURJO</h3>
+                    <p class="text-blue-200 text-xs">Sistem Informasi Akademik</p>
+                  </div>
+                </div>
+                <div class="mt-8 space-y-3">
+                  <div class="inline-block px-3 py-1 bg-white/10 text-blue-200 text-xs rounded-full border border-white/10">
+                    Akses Multi-Role Terpadu
+                  </div>
+                  <h2 class="text-2xl font-black leading-snug">
+                    Pengelolaan Nilai & Leger Akademik Terpusat
+                  </h2>
+                  <p class="text-blue-100 text-xs leading-relaxed">
+                    Membantu Tata Usaha, Wali Kelas, Guru Pengampu, dan Siswa dalam transparansi akademik.
+                  </p>
+                </div>
+              </div>
+              <div class="text-[11px] text-blue-300 border-t border-white/10 pt-4 mt-6">
+                © 2026 SMP Negeri 1 Trimurjo • Kab. Lampung Tengah
+              </div>
+            </div>
+
+            <!-- Right: Form Login -->
+            <div class="p-8 flex flex-col justify-center bg-white">
+              <div class="mb-6">
+                <h4 class="text-xl font-bold text-slate-900">Masuk ke SIAKAD</h4>
+                <p class="text-slate-500 text-xs mt-1">Masukkan kredensial akun akademik Anda</p>
+              </div>
+
+              <form onsubmit="event.preventDefault(); triggerLoginDemo();" class="space-y-4">
+                <!-- Quick Demo Buttons -->
+                <div class="mb-3">
+                  <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1.5">⚡ Akun Pengujian Cepat:</span>
+                  <div class="grid grid-cols-2 gap-1.5 text-[11px]">
+                    <button type="button" onclick="document.getElementById('demo-login-id').value='tu@smpn1trimurjo.sch.id'" class="p-2 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-900 border border-blue-200 text-left font-bold transition">
+                      <span class="text-[9px] text-blue-600 block uppercase">Tata Usaha</span>
+                      Staf TU
+                    </button>
+                    <button type="button" onclick="document.getElementById('demo-login-id').value='aryapratama19@gmail.com'" class="p-2 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 text-left font-bold transition">
+                      <span class="text-[9px] text-amber-600 block uppercase">Wali Kelas VII B</span>
+                      Pak Arya
+                    </button>
+                    <button type="button" onclick="document.getElementById('demo-login-id').value='budi@smpn1trimurjo.sch.id'" class="p-2 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-200 text-left font-bold transition">
+                      <span class="text-[9px] text-emerald-600 block uppercase">Guru Mapel</span>
+                      Bpk. Budi
+                    </button>
+                    <button type="button" onclick="document.getElementById('demo-login-id').value='0091234567'" class="p-2 rounded-lg bg-sky-50 hover:bg-sky-100 text-sky-900 border border-sky-200 text-left font-bold transition">
+                      <span class="text-[9px] text-sky-600 block uppercase">Siswa</span>
+                      Ahmad (NISN)
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block text-xs font-semibold text-slate-700 mb-1">
+                    Email / NISN Siswa
+                  </label>
+                  <input type="text" id="demo-login-id" placeholder="contoh: tu@smpn1trimurjo.sch.id atau 0091234567" 
+                    value="tu@smpn1trimurjo.sch.id"
+                    class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none transition font-medium">
+                </div>
+
+                <div>
+                  <label class="block text-xs font-semibold text-slate-700 mb-1">
+                    Kata Sandi (Password)
+                  </label>
+                  <input type="password" placeholder="••••••••" 
+                    value="password"
+                    class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
+                </div>
+
+                <div class="flex items-center justify-between text-xs">
+                  <label class="flex items-center gap-2 text-slate-600 cursor-pointer">
+                    <input type="checkbox" checked class="rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+                    Remember Me
+                  </label>
+                  <span class="text-blue-600 hover:underline cursor-pointer">Lupa kata sandi?</span>
+                </div>
+
+                <button type="submit" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition shadow-md shadow-blue-500/20">
+                  LOGIN SEKARANG
+                </button>
+
+                <div class="pt-4 border-t border-slate-100 text-center">
+                  <button type="button" onclick="alert('Hubungi Staf TU di Ruang Administrasi SMPN 1 Trimurjo untuk reset password.');" class="text-xs text-slate-500 hover:text-slate-800 font-medium">
+                    💬 Tombol Hubungi Admin
+                  </button>
+                </div>
+              </form>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Auto-Sync Engine Script -->
+  <script>
+    // Tab switching logic
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('block'));
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+
+      const target = document.getElementById('tab-' + tabId);
+      if (target) {
+        target.classList.remove('hidden');
+        target.classList.add('block');
+      }
+      const activeBtn = document.getElementById('btn-' + tabId);
+      if (activeBtn) {
+        activeBtn.classList.add('active');
+      }
+      localStorage.setItem('active_siakad_tab', tabId);
+    }
+
+    // Filter Activity Diagrams
+    function filterActivity(category) {
+      document.querySelectorAll('.act-filter').forEach(btn => btn.classList.remove('active', 'bg-slate-800', 'text-white'));
+      event.target.classList.add('active', 'bg-slate-800', 'text-white');
+
+      const items = document.querySelectorAll('.act-item');
+      if (category === 'all') {
+        items.forEach(el => el.style.display = 'block');
+      } else {
+        items.forEach(el => {
+          if (el.classList.contains(category)) {
+            el.style.display = 'block';
+          } else {
+            el.style.display = 'none';
+          }
+        });
+      }
+    }
+
+    // Live Auto-Update & Sync Engine
+    let autoReloadTimer = null;
+    let isAutoReload = true;
+
+    function updateTimestamp() {
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      const dateStr = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+      const el = document.getElementById('last-updated');
+      if (el) el.textContent = dateStr + ' ' + timeStr;
+    }
+
+    function triggerLoginDemo() {
+      const id = document.getElementById('demo-login-id').value;
+      alert('Demo Login Berhasil!\nAkun: ' + id + '\nStatus: Terhubung ke Database siakad_smpn1_trimurjo');
+    }
+
+    function manualRefresh() {
+      updateTimestamp();
+      const badge = document.getElementById('sync-badge');
+      if (badge) {
+        badge.innerHTML = '<span class="w-2 h-2 rounded-full bg-blue-400"></span> Memperbarui...';
+        setTimeout(() => {
+          badge.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-400 live-pulse"></span> Auto-Sync Aktif';
+        }, 600);
+      }
+    }
+
+    function toggleAutoReload(enabled) {
+      isAutoReload = enabled;
+      if (isAutoReload) {
+        startSyncTimer();
+      } else {
+        if (autoReloadTimer) clearInterval(autoReloadTimer);
+        const badge = document.getElementById('sync-badge');
+        if (badge) badge.innerHTML = '<span class="w-2 h-2 rounded-full bg-amber-400"></span> Sync Jeda';
+      }
+    }
+
+    function startSyncTimer() {
+      if (autoReloadTimer) clearInterval(autoReloadTimer);
+      autoReloadTimer = setInterval(() => {
+        if (isAutoReload) {
+          updateTimestamp();
+          // Cek bila ada perubahan status program via localStorage
+          const lastProgramChange = localStorage.getItem('siakad_program_version');
+          if (lastProgramChange && lastProgramChange !== window._currentVersion) {
+            window._currentVersion = lastProgramChange;
+            console.log('Perubahan program terdeteksi, memperbarui tampilan...');
+          }
+        }
+      }, 5000);
+    }
+
+    // Init state on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      updateTimestamp();
+      startSyncTimer();
+
+      // Restore last active tab
+      const savedTab = localStorage.getItem('active_siakad_tab');
+      if (savedTab && document.getElementById('tab-' + savedTab)) {
+        switchTab(savedTab);
+      }
+
+      // Listen to cross-tab program updates
+      window.addEventListener('storage', (e) => {
+        if (e.key === 'siakad_program_version' || e.key === 'siakad_db_update') {
+          manualRefresh();
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>
